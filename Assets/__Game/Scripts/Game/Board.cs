@@ -165,7 +165,7 @@ namespace FG {
                 if (posY - i < 0 || posX -i < 0|| _pieces[posX - i, posY - i] == null ||
                     _pieces[posX - i, posY - i].Owner != CurrentPlayer) ;
 
-                else
+                else if( _pieces[posX - i, posY - i].Owner == CurrentPlayer)
                 {
                     _score++;
                 }
@@ -174,7 +174,7 @@ namespace FG {
                 if (posY + i > _boardSize - 1 || posX + i > _boardSize - 1 || _pieces[posX + i, posY + i] == null ||
                     _pieces[posX + i, posY + i].Owner != CurrentPlayer) ;
 
-                else
+                else if(_pieces[posX + i, posY + i].Owner == CurrentPlayer)
                 {
                     _score++;
                 }
@@ -197,11 +197,7 @@ namespace FG {
                     _score++;
                 }
 
-                else ;
-
-
-
-                    // BL
+                // BL
                 if (posY + i > _boardSize - 1 || posX - i < 0  || _pieces[posX - i, posY + i] == null ||
                     _pieces[posX - i, posY + i].Owner != CurrentPlayer) ;
                 
@@ -209,8 +205,7 @@ namespace FG {
                 {
                     _score++;
                 }
-
-                else ;
+                
             }
             if (CheckWin())
             {
