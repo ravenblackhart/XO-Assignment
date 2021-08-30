@@ -6,9 +6,11 @@ using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 namespace FG {
-    public class Board : MonoBehaviour {
+    public class Board : MonoBehaviour
+    {
 
         #region Declarations
+
         [SerializeField] private GameObject _tilePrefab;
         public Player playerOne;
         public Player playerTwo;
@@ -23,21 +25,23 @@ namespace FG {
 
         private Transform _tilesTransform;
         private Transform _piecesTransform;
-        
+
         private const float _timeBetweenMarkingWinningTiles = 0.5f;
         private const float _timeToFadeWinningTiles = 0.5f;
         public Player CurrentPlayer { get; private set; }
 
         public Tile this[int row, int column] => _tiles[row, column];
-        
+
         //Added Code
-        private int _score = 0;
+        private int _score = 1;
         private GameObject _winPiece;
         private int _slotsToWin;
         private bool hasWon = false;
-        
+
         #endregion
-        public void Awake() {
+
+        public void Awake()
+        {
             _tilesTransform = transform.GetChild(0);
             _piecesTransform = transform.GetChild(1);
             _boardSize = PlaySettings.BoardSize;
@@ -52,23 +56,28 @@ namespace FG {
             playerTwo.displayName = PlaySettings.PlayerTwoName;
 
             SetCurrentPlayer();
-            
+
             //Todo Remove Debug
             Debug.Log(_slotsToWin);
         }
-        
-        public bool PlaceMarkerOnTile(Tile tile) {
+
+        public bool PlaceMarkerOnTile(Tile tile)
+        {
             _winPiece = CurrentPlayer.piecePrefab;
-            if (ReferenceEquals(CurrentPlayer, null)) {
+            if (ReferenceEquals(CurrentPlayer, null))
+            {
                 return false;
             }
-            
-            if (ReferenceEquals(_pieces[tile.gridPosition.x, tile.gridPosition.y], null) && !hasWon && _slotsToWin <= _boardSize) {
+
+            if (ReferenceEquals(_pieces[tile.gridPosition.x, tile.gridPosition.y], null) && !hasWon &&
+                _slotsToWin <= _boardSize)
+            {
                 GamePiece piece = Instantiate(CurrentPlayer.piecePrefab,
                     new Vector3(tile.gridPosition.x, -tile.gridPosition.y),
                     Quaternion.identity, _piecesTransform)?.GetComponent<GamePiece>();
 
-                if (!ReferenceEquals(piece, null)) {
+                if (!ReferenceEquals(piece, null))
+                {
                     piece.Owner = CurrentPlayer;
                     _pieces[tile.gridPosition.x, tile.gridPosition.y] = piece;
                 }
@@ -82,24 +91,92 @@ namespace FG {
 
             return false;
         }
-        
+
+
+        // bool Contains(Vector2 )
+        // {
+        //     return false;
+        //     //Todo
+        //
+        // }
+
         void UpdateScore(Tile tile)
         {
-            int x = tile.gridPosition.x;
-            int y = tile.gridPosition.y;
-            
-            if (_pieces[x -1,y] != null &&
-                _pieces[x -1, y].Owner == CurrentPlayer)
+            int posX = tile.gridPosition.x;
+            int posY = tile.gridPosition.y;
+
+            for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
-                //Debug.Log($"found fwen at {tile.gridPosition.x} , {tile.gridPosition.y}");
-                Debug.Log("Fwend bellongs to " + CurrentPlayer);
+                // L to R
+                if (posX + i > _boardSize - 1 || _pieces[posX + i, posY] == null || _pieces[posX + i, posY].Owner != CurrentPlayer )
+                {
+                    Debug.Log("NOPE");
+                }
+
+                else
+                {
+                    _score++; 
+                    Debug.Log($"Current score {_score} from tile at {posX + i} , ");
+                    
+                }
+                   
+                
             }
-            
-            for (x = 0; x < _boardSize - 1 ; x++)
+
+
+
+               
+
+                    //Vertical Check
+                    if (posY - 1 < 0 ||
+                        posY + 1 > _boardSize - 1)
+                    {
+
+                    }
+
+
+
+
+
+
+            // if (_pieces[_boardSize-1, posY])
+            // {
+            //     
+            // }
+            // else
+            // {
+            //     for (int i = 0; i < _slotsToWin -1; i++)
+            //     {
+            //         if (_pieces[posX +i,posY] != null &&
+            //             _pieces[posX +i, posY].Owner == CurrentPlayer )
+            //         {
+            //             for (int j= 0; j < _slotsToWin; j++)
+            //             {
+            //                 Debug.Log($"found fwen at {posX +1} , {posY.ToString()}");
+            //                 _score++;
+            //                 Debug.Log(_score);
+            //             }
+            //
+            //         }
+            //     }
+            //     
+
+            if (_score == _slotsToWin)
             {
+                hasWon = true;
+                Debug.Log($"{CurrentPlayer} Wins ! ");
+                // StartCoroutine(MarkWinningTiles());
+                // StartCoroutine(FadeTile());
+                StopAllCoroutines();
+
             }
-            
-            // foreach (GamePiece piece in _pieces)
+        }
+
+    
+
+
+
+    // foreach (GamePiece piece in _pieces)
             // {
             //     if (piece == null || tile.gridPosition.x > _boardSize-1 || tile.gridPosition.y > _boardSize-1 || tile.gridPosition.x < 0 || tile.gridPosition.y < 0)
             //     {
@@ -129,7 +206,7 @@ namespace FG {
             //     }
             //
             // }
-        }
+        
 
         IEnumerator CheckWin(Tile tile)
         {
@@ -166,7 +243,7 @@ namespace FG {
 
         private void SwitchPlayer()
         {
-            _score = 0;
+            _score = 1;
             CurrentPlayer = ReferenceEquals(CurrentPlayer, playerOne) ? playerTwo : playerOne;
             switchPlayerEvent.Invoke(CurrentPlayer);
         }
