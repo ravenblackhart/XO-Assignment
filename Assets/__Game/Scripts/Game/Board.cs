@@ -107,19 +107,62 @@ namespace FG {
 
             for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
+
                 // L to R
                 if (posX + i > _boardSize - 1 || _pieces[posX + i, posY] == null || _pieces[posX + i, posY].Owner != CurrentPlayer )
                 {
-                    Debug.Log("NOPE");
+                    
                 }
 
                 else
                 {
                     _score++; 
-                    Debug.Log($"Current score {_score} from tile at {posX + i} , ");
+                    Debug.Log($"LR {_score}");
                     
                 }
-                   
+                
+                // R to L
+                if (posX - i < 0 || _pieces[posX - i, posY] == null || _pieces[posX - i, posY].Owner != CurrentPlayer )
+                {
+                    
+                }
+
+                else
+                {
+                    _score++; 
+                    Debug.Log($"RL {_score}");
+
+                    
+                }
+                
+                // D to U
+                if (posY - i < 0 || _pieces[posX, posY - i] == null || _pieces[posX, posY - i].Owner != CurrentPlayer )
+                {
+                    
+                }
+
+                else
+                {
+                    _score++;
+                    Debug.Log($"DU{_score}");
+
+                }
+                
+                // U to D
+                if (posY + i > _boardSize - 1|| _pieces[posX, posY + i] == null || _pieces[posX, posY + i].Owner != CurrentPlayer )
+                {
+                 ;   
+                }
+
+                else
+                {
+                    _score++;
+                    Debug.Log($"UD {_score}");
+
+                }
+                
+                
+
                 
             }
 
