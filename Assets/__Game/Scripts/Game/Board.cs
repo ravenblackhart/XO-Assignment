@@ -32,14 +32,16 @@ namespace FG {
         public Tile this[int row, int column] => _tiles[row, column];
         
         //Added Code
-        private int _score;
-        private int[] goScore;
+        private int _score = 0;
+        private GameObject _winPiece;
+        private int _slotsToWin;
         
         #endregion
         public void Awake() {
             _tilesTransform = transform.GetChild(0);
             _piecesTransform = transform.GetChild(1);
             _boardSize = PlaySettings.BoardSize;
+            _slotsToWin = PlaySettings.SlotsToWin;
 
             _tiles = new Tile[_boardSize, _boardSize];
             _pieces = new GamePiece[_boardSize, _boardSize];
@@ -53,6 +55,7 @@ namespace FG {
         }
         
         public bool PlaceMarkerOnTile(Tile tile) {
+            _winPiece = CurrentPlayer.piecePrefab;
             if (ReferenceEquals(CurrentPlayer, null)) {
                 return false;
             }
@@ -73,13 +76,31 @@ namespace FG {
                 // {
                 //     Debug.Log(piece.Owner.ToString() + tile.gridPosition.x+" , " + tile.gridPosition.y + "scoring " + _score);
                 // }
+                if (_score == _slotsToWin)
+                {
+                    StopCoroutine(CheckWin());
+                    Debug.Log($"{CurrentPlayer} Wins ! ");
+                }
+
+                else
+                {
+                    StartCoroutine(CheckWin());
+                }
+                
+                
                 
                 SwitchPlayer();
             }
 
             return false;
         }
-        
+
+        IEnumerator CheckWin()
+        {
+                Debug.Log($"am braining. shh");
+
+            yield return null;
+        }
         // Todo Insert Tiles checking here.
     
         // Coroutines for if Win Condition Met
@@ -106,11 +127,14 @@ namespace FG {
         //     tileRenderer.color = targetColor;
         // }
 
-        private void SwitchPlayer() {
+        private void SwitchPlayer()
+        {
+            _score = 0;
             CurrentPlayer = ReferenceEquals(CurrentPlayer, playerOne) ? playerTwo : playerOne;
             WaitingPlayer = ReferenceEquals(WaitingPlayer, playerOne) ? playerTwo : playerOne;
+            
             ReassignValue();
-            Debug.Log($"Current Player is {CurrentPlayer}, playing {CurrentPlayer.piecePrefab.gameObject.name}. Inactive player is {WaitingPlayer}");
+            Debug.Log($"Current Player is {CurrentPlayer}, playing {_winPiece.name}. Inactive player is {WaitingPlayer}");
             switchPlayerEvent.Invoke(CurrentPlayer);
         }
 
@@ -136,7 +160,6 @@ namespace FG {
         private void SetCurrentPlayer() {
             CurrentPlayer = Random.Range(0, 2) == 0 ? playerOne : playerTwo;
             WaitingPlayer = ReferenceEquals(CurrentPlayer, playerOne) ? playerTwo : playerOne;
-            Debug.Log($"Current Player is {CurrentPlayer}, playing {CurrentPlayer.piecePrefab.gameObject.name}. Inactive player is {WaitingPlayer}");
             switchPlayerEvent.Invoke(CurrentPlayer);
 
             
@@ -148,18 +171,23 @@ namespace FG {
 
             foreach (GamePiece piece in _pieces)
             {
-                _score = GetComponent<GamePiece>().pieceValue;
-                if (piece.Owner = CurrentPlayer)
+               // Debug.Log($"{tile.gridPositionX}");
+                if (piece == null)
                 {
-                    _score = 1;
-                    Debug.Log($"Current Player is {CurrentPlayer} and {CurrentPlayer.piecePrefab.gameObject.name} scores {_score.ToString()}");
+                     continue;
+                }
+                if (piece.name.Contains(_winPiece.name))
+                {
+                    _score ++ ;
+                    Debug.Log($"Current Player is {CurrentPlayer} and {_winPiece.name} current score is {_score}");
                 }
         
-                else
-                {
-                    _score = 0;
-                    Debug.Log($"Inactive Player is {WaitingPlayer} and {CurrentPlayer.piecePrefab.gameObject.name} scores {_score.ToString()}");
-                }
+                // else
+                // {
+                //     _score = 0;
+                //     Debug.Log($"Inactive Player is {WaitingPlayer} and {WaitingPlayer.piecePrefab.name} scores 0");
+                // }
+
             }
         }
         
