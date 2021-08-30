@@ -1638,7 +1638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5086106265550967899, guid: 3cdb2573dc0dbf948a16046d012bbe74, type: 3}
       propertyPath: m_Name
-      value: NumberSpinner (1)
+      value: Slots
       objectReference: {fileID: 0}
     - target: {fileID: 5086106265652467452, guid: 3cdb2573dc0dbf948a16046d012bbe74, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2293,7 +2293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5086106265550967899, guid: 3cdb2573dc0dbf948a16046d012bbe74, type: 3}
       propertyPath: m_Name
-      value: NumberSpinner
+      value: Board
       objectReference: {fileID: 0}
     - target: {fileID: 5086106265652467452, guid: 3cdb2573dc0dbf948a16046d012bbe74, type: 3}
       propertyPath: m_AnchorMax.y

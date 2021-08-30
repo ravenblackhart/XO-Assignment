@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
 
 namespace FG {
 	public class PlaySettings : MonoBehaviour {
@@ -6,5 +9,14 @@ namespace FG {
 		public static int SlotsToWin { get; set; } = 3;
 		public static string PlayerOneName { get; set; } = "Player one";
 		public static string PlayerTwoName { get; set; } = "Player two";
+
+		private void Update()
+		{
+			//Number Spinners in Menu Scene Renamed to Board & Slots respectively
+			GameObject.Find("Slots").GetComponent<NumberSpinner>().maximumValue = BoardSize;
+		}
 	}
+	
+
+	
 }

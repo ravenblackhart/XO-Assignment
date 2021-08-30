@@ -27,7 +27,6 @@ namespace FG {
         private const float _timeBetweenMarkingWinningTiles = 0.5f;
         private const float _timeToFadeWinningTiles = 0.5f;
         public Player CurrentPlayer { get; private set; }
-        private Player WaitingPlayer { get; set; }
 
         public Tile this[int row, int column] => _tiles[row, column];
         
@@ -35,6 +34,7 @@ namespace FG {
         private int _score = 0;
         private GameObject _winPiece;
         private int _slotsToWin;
+        private bool hasWon = false;
         
         #endregion
         public void Awake() {
@@ -52,6 +52,9 @@ namespace FG {
             playerTwo.displayName = PlaySettings.PlayerTwoName;
 
             SetCurrentPlayer();
+            
+            //Todo Remove Debug
+            Debug.Log(_slotsToWin);
         }
         
         public bool PlaceMarkerOnTile(Tile tile) {
@@ -60,7 +63,7 @@ namespace FG {
                 return false;
             }
             
-            if (ReferenceEquals(_pieces[tile.gridPosition.x, tile.gridPosition.y], null)) {
+            if (ReferenceEquals(_pieces[tile.gridPosition.x, tile.gridPosition.y], null) && !hasWon && _slotsToWin <= _boardSize) {
                 GamePiece piece = Instantiate(CurrentPlayer.piecePrefab,
                     new Vector3(tile.gridPosition.x, -tile.gridPosition.y),
                     Quaternion.identity, _piecesTransform)?.GetComponent<GamePiece>();
@@ -72,69 +75,99 @@ namespace FG {
 
                 //didPlaceEvent.Invoke();
 
-                // foreach (GamePiece gamePiece in _pieces)
-                // {
-                //     Debug.Log(piece.Owner.ToString() + tile.gridPosition.x+" , " + tile.gridPosition.y + "scoring " + _score);
-                // }
-                if (_score == _slotsToWin)
-                {
-                    StopCoroutine(CheckWin());
-                    Debug.Log($"{CurrentPlayer} Wins ! ");
-                }
+                UpdateScore(tile);
 
-                else
-                {
-                    StartCoroutine(CheckWin());
-                }
-                
-                
-                
                 SwitchPlayer();
             }
 
             return false;
         }
-
-        IEnumerator CheckWin()
+        
+        void UpdateScore(Tile tile)
         {
-                Debug.Log($"am braining. shh");
+            int x = tile.gridPosition.x;
+            int y = tile.gridPosition.y;
+            
+            if (_pieces[x -1,y] != null &&
+                _pieces[x -1, y].Owner == CurrentPlayer)
+            {
+                //Debug.Log($"found fwen at {tile.gridPosition.x} , {tile.gridPosition.y}");
+                Debug.Log("Fwend bellongs to " + CurrentPlayer);
+            }
+            
+            for (x = 0; x < _boardSize - 1 ; x++)
+            {
+            }
+            
+            // foreach (GamePiece piece in _pieces)
+            // {
+            //     if (piece == null || tile.gridPosition.x > _boardSize-1 || tile.gridPosition.y > _boardSize-1 || tile.gridPosition.x < 0 || tile.gridPosition.y < 0)
+            //     {
+            //         StopCoroutine(CheckWin(tile));
+            //         continue;
+            //     }
+            //
+            //     else
+            //     {
+            //         if (piece.name.Contains(_winPiece.name))
+            //         {
+            //             
+            //             StartCoroutine(CheckWin(tile));
+            //             
+            //         }
+            //         
+            //         if (_score == _slotsToWin)
+            //         {
+            //             hasWon = true;
+            //             Debug.Log($"{CurrentPlayer} Wins ! ");
+            //             // StartCoroutine(MarkWinningTiles());
+            //             // StartCoroutine(FadeTile());
+            //             StopAllCoroutines();
+            //
+            //         }
+            //
+            //     }
+            //
+            // }
+        }
 
+        IEnumerator CheckWin(Tile tile)
+        {
+            _score ++ ;
+            Debug.Log($"Current Player is {CurrentPlayer} and {_winPiece.name} current score is {_score}. I am at {tile.gridPosition.x} , {tile.gridPosition.y}. ");
             yield return null;
         }
-        // Todo Insert Tiles checking here.
+        
+        // Todo DO THING HERE
     
-        // Coroutines for if Win Condition Met
-        // private IEnumerator MarkWinningTiles(List<Vector2Int> winningTiles, Color color) {
-        //     foreach (Vector2Int tile in winningTiles) {
-        //         StartCoroutine(FadeTile(_tiles[tile.x, tile.y], color));
-        //         yield return new WaitForSeconds(_timeBetweenMarkingWinningTiles);
-        //     }
-        // }
-        //
-        // private IEnumerator FadeTile(Tile tile, Color targetColor) {
-        //     SpriteRenderer tileRenderer = tile.GetComponent<SpriteRenderer>();
-        //     float elapsedTime = 0f;
-        //     Color startColor = tileRenderer.color;
-        //     float fadeTime = _timeToFadeWinningTiles;
-        //     
-        //     while (elapsedTime < fadeTime) {
-        //         elapsedTime += Time.deltaTime;
-        //         float blend = Mathf.Clamp01(elapsedTime / fadeTime);
-        //         tileRenderer.color = Color.Lerp(startColor, targetColor, blend);
-        //         yield return null;
-        //     }
-        //
-        //     tileRenderer.color = targetColor;
-        // }
+
+        private IEnumerator MarkWinningTiles(List<Vector2Int> winningTiles, Color color) {
+            foreach (Vector2Int tile in winningTiles) {
+                StartCoroutine(FadeTile(_tiles[tile.x, tile.y], color));
+                yield return new WaitForSeconds(_timeBetweenMarkingWinningTiles);
+            }
+        }
+        
+        private IEnumerator FadeTile(Tile tile, Color targetColor) {
+            SpriteRenderer tileRenderer = tile.GetComponent<SpriteRenderer>();
+            float elapsedTime = 0f;
+            Color startColor = tileRenderer.color;
+            float fadeTime = _timeToFadeWinningTiles;
+            
+            while (elapsedTime < fadeTime) {
+                elapsedTime += Time.deltaTime;
+                float blend = Mathf.Clamp01(elapsedTime / fadeTime);
+                tileRenderer.color = Color.Lerp(startColor, targetColor, blend);
+                yield return null;
+            }
+        
+            tileRenderer.color = targetColor;
+        }
 
         private void SwitchPlayer()
         {
             _score = 0;
             CurrentPlayer = ReferenceEquals(CurrentPlayer, playerOne) ? playerTwo : playerOne;
-            WaitingPlayer = ReferenceEquals(WaitingPlayer, playerOne) ? playerTwo : playerOne;
-            
-            ReassignValue();
-            Debug.Log($"Current Player is {CurrentPlayer}, playing {_winPiece.name}. Inactive player is {WaitingPlayer}");
             switchPlayerEvent.Invoke(CurrentPlayer);
         }
 
@@ -159,37 +192,8 @@ namespace FG {
 
         private void SetCurrentPlayer() {
             CurrentPlayer = Random.Range(0, 2) == 0 ? playerOne : playerTwo;
-            WaitingPlayer = ReferenceEquals(CurrentPlayer, playerOne) ? playerTwo : playerOne;
             switchPlayerEvent.Invoke(CurrentPlayer);
-
-            
-            
         }
 
-        void ReassignValue()
-        {
-
-            foreach (GamePiece piece in _pieces)
-            {
-               // Debug.Log($"{tile.gridPositionX}");
-                if (piece == null)
-                {
-                     continue;
-                }
-                if (piece.name.Contains(_winPiece.name))
-                {
-                    _score ++ ;
-                    Debug.Log($"Current Player is {CurrentPlayer} and {_winPiece.name} current score is {_score}");
-                }
-        
-                // else
-                // {
-                //     _score = 0;
-                //     Debug.Log($"Inactive Player is {WaitingPlayer} and {WaitingPlayer.piecePrefab.name} scores 0");
-                // }
-
-            }
-        }
-        
     }
 }

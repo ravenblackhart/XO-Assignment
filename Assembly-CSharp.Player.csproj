@@ -55,6 +55,7 @@
      <Compile Include="Assets\__Game\Scripts\UI\NumberSpinner.cs" />
      <Compile Include="Assets\__Game\Scripts\Utility\DontDestroy.cs" />
      <Compile Include="Assets\__Game\Scripts\Game\Tile.cs" />
+     <Compile Include="Assets\__Game\Scripts\ViRef\NewBehaviourScript.cs" />
      <Compile Include="Assets\__Game\Scripts\Game\GamePiece.cs" />
      <Compile Include="Assets\__Game\Scripts\Game\GameCamera.cs" />
      <Compile Include="Assets\__Game\Scripts\Events\Events.cs" />
