@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 
@@ -13,7 +14,11 @@ namespace FG {
 		private void Update()
 		{
 			//Number Spinners in Menu Scene Renamed to Board & Slots respectively
-			GameObject.Find("Slots").GetComponent<NumberSpinner>().maximumValue = BoardSize;
+			if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Menu_Scene"))
+			{
+				GameObject.Find("Slots").GetComponent<NumberSpinner>().maximumValue = BoardSize;
+			}
+			
 		}
 	}
 	
