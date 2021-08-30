@@ -162,7 +162,7 @@ namespace FG {
             for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
                 // TL
-                if (posY - i < 0 || posX - i < 0 || _pieces[posX - i, posY - i] == null ||
+                if (posY - i < 0 || posX -i < 0|| _pieces[posX - i, posY - i] == null ||
                     _pieces[posX - i, posY - i].Owner != CurrentPlayer) ;
 
                 else
@@ -191,21 +191,26 @@ namespace FG {
                 // TR
                 if (posY - i < 0  || posX + i > _boardSize - 1|| _pieces[posX + i, posY - i] == null ||
                     _pieces[posX + i, posY - i].Owner != CurrentPlayer) ;
-
-                else
+                
+                else if (_pieces[posX + i, posY - i].Owner == CurrentPlayer)
                 {
                     _score++;
                 }
-                
-                // BL
+
+                else ;
+
+
+
+                    // BL
                 if (posY + i > _boardSize - 1 || posX - i < 0  || _pieces[posX - i, posY + i] == null ||
                     _pieces[posX - i, posY + i].Owner != CurrentPlayer) ;
-
-                else
+                
+                else if (_pieces[posX - i, posY + i].Owner == CurrentPlayer)
                 {
                     _score++;
                 }
 
+                else ;
             }
             if (CheckWin())
             {
