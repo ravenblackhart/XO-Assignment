@@ -104,78 +104,67 @@ namespace FG {
         {
             int posX = tile.gridPosition.x;
             int posY = tile.gridPosition.y;
-
-            for (int i = 1; i <= _slotsToWin -1 ; i++)
+            
+            _score = 1;
+            for (int i = 1; i <= _slotsToWin - 1; i++)
             {
+                
 
                 // L to R
-                if (posX + i > _boardSize - 1 || _pieces[posX + i, posY] == null || _pieces[posX + i, posY].Owner != CurrentPlayer )
+                if (posX + i > _boardSize - 1 || _pieces[posX + i, posY] == null ||
+                    _pieces[posX + i, posY].Owner != CurrentPlayer)
                 {
-                    
                 }
 
                 else
                 {
-                    _score++; 
+                    _score++;
                     Debug.Log($"LR {_score}");
-                    
                 }
-                
+
                 // R to L
-                if (posX - i < 0 || _pieces[posX - i, posY] == null || _pieces[posX - i, posY].Owner != CurrentPlayer )
+                if (posX - i < 0 || _pieces[posX - i, posY] == null || _pieces[posX - i, posY].Owner != CurrentPlayer)
                 {
-                    
                 }
 
                 else
                 {
-                    _score++; 
+                    _score++;
                     Debug.Log($"RL {_score}");
-
-                    
                 }
-                
+            }
+            if (CheckWin())
+            {
+                return;
+            }
+            _score = 1;
+            for (int i = 1; i <= _slotsToWin -1 ; i++)
+            {
                 // D to U
                 if (posY - i < 0 || _pieces[posX, posY - i] == null || _pieces[posX, posY - i].Owner != CurrentPlayer )
-                {
-                    
-                }
+                { }
 
                 else
                 {
                     _score++;
                     Debug.Log($"DU{_score}");
-
                 }
                 
                 // U to D
                 if (posY + i > _boardSize - 1|| _pieces[posX, posY + i] == null || _pieces[posX, posY + i].Owner != CurrentPlayer )
-                {
-                 ;   
-                }
+                { }
 
                 else
                 {
                     _score++;
                     Debug.Log($"UD {_score}");
-
                 }
-                
-                
 
-                
             }
-
-
-
-               
-
-                    //Vertical Check
-                    if (posY - 1 < 0 ||
-                        posY + 1 > _boardSize - 1)
-                    {
-
-                    }
+            if (CheckWin())
+            {
+                return;
+            }
 
 
 
@@ -204,6 +193,11 @@ namespace FG {
             //     }
             //     
 
+           
+        }
+
+        bool CheckWin()
+        {
             if (_score == _slotsToWin)
             {
                 hasWon = true;
@@ -211,8 +205,11 @@ namespace FG {
                 // StartCoroutine(MarkWinningTiles());
                 // StartCoroutine(FadeTile());
                 StopAllCoroutines();
+                return true;
 
             }
+
+            return false;
         }
 
     
@@ -251,12 +248,12 @@ namespace FG {
             // }
         
 
-        IEnumerator CheckWin(Tile tile)
-        {
-            _score ++ ;
-            Debug.Log($"Current Player is {CurrentPlayer} and {_winPiece.name} current score is {_score}. I am at {tile.gridPosition.x} , {tile.gridPosition.y}. ");
-            yield return null;
-        }
+        // IEnumerator CheckWin(Tile tile)
+        // {
+        //     _score ++ ;
+        //     Debug.Log($"Current Player is {CurrentPlayer} and {_winPiece.name} current score is {_score}. I am at {tile.gridPosition.x} , {tile.gridPosition.y}. ");
+        //     yield return null;
+        // }
         
         // Todo DO THING HERE
     
@@ -286,7 +283,7 @@ namespace FG {
 
         private void SwitchPlayer()
         {
-            _score = 1;
+            //_score = 1;
             CurrentPlayer = ReferenceEquals(CurrentPlayer, playerOne) ? playerTwo : playerOne;
             switchPlayerEvent.Invoke(CurrentPlayer);
         }
