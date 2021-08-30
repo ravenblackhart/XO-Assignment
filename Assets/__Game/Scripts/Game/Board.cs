@@ -106,31 +106,24 @@ namespace FG {
             int posY = tile.gridPosition.y;
             
             _score = 1;
+            //Horizontal
             for (int i = 1; i <= _slotsToWin - 1; i++)
             {
-                
-
                 // L to R
                 if (posX + i > _boardSize - 1 || _pieces[posX + i, posY] == null ||
-                    _pieces[posX + i, posY].Owner != CurrentPlayer)
-                {
-                }
+                    _pieces[posX + i, posY].Owner != CurrentPlayer) ;
 
                 else
                 {
                     _score++;
-                    Debug.Log($"LR {_score}");
                 }
 
                 // R to L
-                if (posX - i < 0 || _pieces[posX - i, posY] == null || _pieces[posX - i, posY].Owner != CurrentPlayer)
-                {
-                }
+                if (posX - i < 0 || _pieces[posX - i, posY] == null || _pieces[posX - i, posY].Owner != CurrentPlayer) ;
 
                 else
                 {
                     _score++;
-                    Debug.Log($"RL {_score}");
                 }
             }
             if (CheckWin())
@@ -138,26 +131,79 @@ namespace FG {
                 return;
             }
             _score = 1;
+            //Vertical
             for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
                 // D to U
-                if (posY - i < 0 || _pieces[posX, posY - i] == null || _pieces[posX, posY - i].Owner != CurrentPlayer )
-                { }
+                if (posY - i < 0 || _pieces[posX, posY - i] == null || _pieces[posX, posY - i].Owner != CurrentPlayer) ;
 
                 else
                 {
                     _score++;
-                    Debug.Log($"DU{_score}");
                 }
                 
                 // U to D
-                if (posY + i > _boardSize - 1|| _pieces[posX, posY + i] == null || _pieces[posX, posY + i].Owner != CurrentPlayer )
-                { }
+                if (posY + i > _boardSize - 1 || _pieces[posX, posY + i] == null ||
+                    _pieces[posX, posY + i].Owner != CurrentPlayer) ;
 
                 else
                 {
                     _score++;
-                    Debug.Log($"UD {_score}");
+                }
+
+            }
+            if (CheckWin())
+            {
+                return;
+            }
+
+            _score = 1;
+            //Diagonal TL -> BR 
+            for (int i = 1; i <= _slotsToWin -1 ; i++)
+            {
+                // TL
+                if (posY - i < 0 || posX - i < 0 || _pieces[posX - i, posY - i] == null ||
+                    _pieces[posX - i, posY - i].Owner != CurrentPlayer) ;
+
+                else
+                {
+                    _score++;
+                }
+                
+                // BR
+                if (posY + i > _boardSize - 1 || posX + i > _boardSize - 1 || _pieces[posX + i, posY + i] == null ||
+                    _pieces[posX + i, posY + i].Owner != CurrentPlayer) ;
+
+                else
+                {
+                    _score++;
+                }
+
+            }
+            if (CheckWin())
+            {
+                return;
+            }
+            _score = 1;
+            //Diagonal TR -> BL 
+            for (int i = 1; i <= _slotsToWin -1 ; i++)
+            {
+                // TR
+                if (posY - i < 0  || posX + i > _boardSize - 1|| _pieces[posX + i, posY - i] == null ||
+                    _pieces[posX + i, posY - i].Owner != CurrentPlayer) ;
+
+                else
+                {
+                    _score++;
+                }
+                
+                // BL
+                if (posY + i > _boardSize - 1 || posX - i < 0  || _pieces[posX - i, posY + i] == null ||
+                    _pieces[posX - i, posY + i].Owner != CurrentPlayer) ;
+
+                else
+                {
+                    _score++;
                 }
 
             }
@@ -193,7 +239,7 @@ namespace FG {
             //     }
             //     
 
-           
+
         }
 
         bool CheckWin()
