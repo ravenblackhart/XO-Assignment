@@ -37,7 +37,10 @@ namespace FG {
         private GameObject _winPiece;
         private int _slotsToWin;
         private bool hasWon = false;
+        private List<Vector2Int> scoringTiles;
 
+        private int posX;
+        private int posY;
         #endregion
 
         public void Awake()
@@ -54,11 +57,10 @@ namespace FG {
 
             playerOne.displayName = PlaySettings.PlayerOneName;
             playerTwo.displayName = PlaySettings.PlayerTwoName;
-
+            scoringTiles = new List<Vector2Int>();
+            
+           
             SetCurrentPlayer();
-
-            //Todo Remove Debug
-            Debug.Log(_slotsToWin);
         }
 
         public bool PlaceMarkerOnTile(Tile tile)
@@ -82,7 +84,7 @@ namespace FG {
                     _pieces[tile.gridPosition.x, tile.gridPosition.y] = piece;
                 }
 
-                //didPlaceEvent.Invoke();
+                didPlaceEvent.Invoke();
 
                 UpdateScore(tile);
 
@@ -91,21 +93,14 @@ namespace FG {
 
             return false;
         }
-
-
-        // bool Contains(Vector2 )
-        // {
-        //     return false;
-        //     //Todo
-        //
-        // }
-
+        
         void UpdateScore(Tile tile)
         {
-            int posX = tile.gridPosition.x;
-            int posY = tile.gridPosition.y;
-            
+            posX = tile.gridPosition.x;
+            posY = tile.gridPosition.y;
+          
             _score = 1;
+            scoringTiles.Clear();
             //Horizontal
             for (int i = 1; i <= _slotsToWin - 1; i++)
             {
@@ -116,6 +111,8 @@ namespace FG {
                 else
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX + i, posY));
+                    
                 }
 
                 // R to L
@@ -124,6 +121,7 @@ namespace FG {
                 else
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX - i, posY));
                 }
             }
             if (CheckWin())
@@ -131,6 +129,7 @@ namespace FG {
                 return;
             }
             _score = 1;
+            scoringTiles.Clear();
             //Vertical
             for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
@@ -140,6 +139,7 @@ namespace FG {
                 else
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX, posY-i));
                 }
                 
                 // U to D
@@ -149,6 +149,7 @@ namespace FG {
                 else
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX, posY + i));
                 }
 
             }
@@ -158,6 +159,7 @@ namespace FG {
             }
 
             _score = 1;
+            scoringTiles.Clear();
             //Diagonal TL -> BR 
             for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
@@ -168,6 +170,7 @@ namespace FG {
                 else if( _pieces[posX - i, posY - i].Owner == CurrentPlayer)
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX - i, posY - i));
                 }
                 
                 // BR
@@ -177,6 +180,7 @@ namespace FG {
                 else if(_pieces[posX + i, posY + i].Owner == CurrentPlayer)
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX + i, posY + i));
                 }
 
             }
@@ -185,6 +189,7 @@ namespace FG {
                 return;
             }
             _score = 1;
+            scoringTiles.Clear();
             //Diagonal TR -> BL 
             for (int i = 1; i <= _slotsToWin -1 ; i++)
             {
@@ -195,6 +200,7 @@ namespace FG {
                 else if (_pieces[posX + i, posY - i].Owner == CurrentPlayer)
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX + i, posY - i));
                 }
 
                 // BL
@@ -204,6 +210,7 @@ namespace FG {
                 else if (_pieces[posX - i, posY + i].Owner == CurrentPlayer)
                 {
                     _score++;
+                    scoringTiles.Add(new Vector2Int(posX - i, posY + i));
                 }
                 
             }
@@ -211,34 +218,8 @@ namespace FG {
             {
                 return;
             }
-
-
-
-
-
-
-            // if (_pieces[_boardSize-1, posY])
-            // {
-            //     
-            // }
-            // else
-            // {
-            //     for (int i = 0; i < _slotsToWin -1; i++)
-            //     {
-            //         if (_pieces[posX +i,posY] != null &&
-            //             _pieces[posX +i, posY].Owner == CurrentPlayer )
-            //         {
-            //             for (int j= 0; j < _slotsToWin; j++)
-            //             {
-            //                 Debug.Log($"found fwen at {posX +1} , {posY.ToString()}");
-            //                 _score++;
-            //                 Debug.Log(_score);
-            //             }
-            //
-            //         }
-            //     }
-            //     
-
+            _score = 1;
+            scoringTiles.Clear();
 
         }
 
@@ -247,62 +228,14 @@ namespace FG {
             if (_score == _slotsToWin)
             {
                 hasWon = true;
-                Debug.Log($"{CurrentPlayer} Wins ! ");
-                // StartCoroutine(MarkWinningTiles());
-                // StartCoroutine(FadeTile());
-                StopAllCoroutines();
+                scoringTiles.Add(new Vector2Int(posX, posY));
+                StartCoroutine(MarkWinningTiles(scoringTiles, Color.magenta));
                 return true;
 
             }
 
             return false;
         }
-
-    
-
-
-
-    // foreach (GamePiece piece in _pieces)
-            // {
-            //     if (piece == null || tile.gridPosition.x > _boardSize-1 || tile.gridPosition.y > _boardSize-1 || tile.gridPosition.x < 0 || tile.gridPosition.y < 0)
-            //     {
-            //         StopCoroutine(CheckWin(tile));
-            //         continue;
-            //     }
-            //
-            //     else
-            //     {
-            //         if (piece.name.Contains(_winPiece.name))
-            //         {
-            //             
-            //             StartCoroutine(CheckWin(tile));
-            //             
-            //         }
-            //         
-            //         if (_score == _slotsToWin)
-            //         {
-            //             hasWon = true;
-            //             Debug.Log($"{CurrentPlayer} Wins ! ");
-            //             // StartCoroutine(MarkWinningTiles());
-            //             // StartCoroutine(FadeTile());
-            //             StopAllCoroutines();
-            //
-            //         }
-            //
-            //     }
-            //
-            // }
-        
-
-        // IEnumerator CheckWin(Tile tile)
-        // {
-        //     _score ++ ;
-        //     Debug.Log($"Current Player is {CurrentPlayer} and {_winPiece.name} current score is {_score}. I am at {tile.gridPosition.x} , {tile.gridPosition.y}. ");
-        //     yield return null;
-        // }
-        
-        // Todo DO THING HERE
-    
 
         private IEnumerator MarkWinningTiles(List<Vector2Int> winningTiles, Color color) {
             foreach (Vector2Int tile in winningTiles) {
